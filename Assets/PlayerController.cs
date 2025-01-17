@@ -5,6 +5,12 @@ public class PlayerController : MonoBehaviour
     [Header("Movement Parameters")]
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private float jumpForce = 8f;
+    [SerializeField] private float fallMultiplier = 2.5f;
+
+    [Header("Shooting Parameters")]
+    [SerializeField] private GameObject bulletPrefab;
+    [SerializeField] private Transform firePoint;
+    [SerializeField] private float bulletSpeed = 20f;
 
     [Header("Ground Check")]
     [SerializeField] private Transform groundCheck;
@@ -15,10 +21,12 @@ public class PlayerController : MonoBehaviour
     private bool isGrounded;
     private float horizontalInput;
     private bool facingRight = true;
+    private Camera mainCamera;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        mainCamera = Camera.main;
     }
 
     private void Update()
@@ -26,34 +34,61 @@ public class PlayerController : MonoBehaviour
         // Vérification du sol
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
 
-        // Utilisation des flèches directionnelles au lieu de Q et D
+        // Déplacements
         horizontalInput = Input.GetAxisRaw("Horizontal");
 
-        // Debug de la détection du sol
-        Debug.Log("Is Grounded: " + isGrounded);
-
-        // Saut (barre d'espace) avec debug
+        // Saut
         if (Input.GetButtonDown("Jump") && isGrounded)
         {
-            Debug.Log("Jump attempted!");
             rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
         }
 
-        // Gestion du flip du sprite selon la direction
-        if (horizontalInput > 0 && !facingRight)
+        // Vérification de la position de la souris pour la direction du personnage
+        Vector2 mousePosition = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+        if (mousePosition.x > transform.position.x && !facingRight)
         {
             Flip();
         }
-        else if (horizontalInput < 0 && facingRight)
+        else if (mousePosition.x < transform.position.x && facingRight)
         {
             Flip();
+        }
+
+        // Tir
+        if (Input.GetButtonDown("Fire1"))
+        {
+            Shoot(mousePosition);
         }
     }
 
     private void FixedUpdate()
     {
-        // Application du mouvement
+        // Mouvement horizontal
         rb.linearVelocity = new Vector2(horizontalInput * moveSpeed, rb.linearVelocity.y);
+
+        // Gravité augmentée pendant la chute
+        if (rb.linearVelocity.y < 0)
+        {
+            rb.linearVelocity += Vector2.up * Physics2D.gravity.y * (fallMultiplier - 1) * Time.fixedDeltaTime;
+        }
+    }
+
+    private void Shoot(Vector2 targetPosition)
+    {
+        // Crée la balle au point de tir
+        GameObject bullet = Instantiate(bulletPrefab, firePoint.position, Quaternion.identity);
+
+        // Calcule la direction vers la position de la souris
+        Vector2 direction = (targetPosition - (Vector2)firePoint.position).normalized;
+
+        Rigidbody2D bulletRb = bullet.GetComponent<Rigidbody2D>();
+
+        // Applique la vélocité à la balle
+        bulletRb.linearVelocity = direction * bulletSpeed;
+
+        // Calcule l'angle pour la rotation de la balle
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        bullet.transform.rotation = Quaternion.Euler(0, 0, angle);
     }
 
     private void Flip()
@@ -68,7 +103,6 @@ public class PlayerController : MonoBehaviour
     {
         if (groundCheck != null)
         {
-            // Visualisation du groundCheck dans l'éditeur
             Gizmos.color = Color.yellow;
             Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
         }
