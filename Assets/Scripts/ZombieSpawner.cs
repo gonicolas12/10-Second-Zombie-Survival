@@ -11,9 +11,9 @@ public class ZombieSpawner : MonoBehaviour
     [SerializeField] private int nombreMaxZombies = 100;
     [SerializeField] private float margeHorsEcran = 2f; // Distance supplémentaire hors de l'écran
 
-    [Header("Limites de Spawn au sol")]
-    [SerializeField] private float minY = -4f; // Hauteur minimale pour spawn
-    [SerializeField] private float maxY = -3f; // Hauteur maximale pour spawn
+    [Header("Configuration du Sol")]
+    [SerializeField] private float hauteurMaxRechercheSol = 10f; // Distance de recherche vers le bas pour trouver le sol
+    [SerializeField] private LayerMask layerSol; // Layer du sol
 
     private Camera mainCamera;
     private int zombiesActuels = 0;
@@ -49,11 +49,21 @@ public class ZombieSpawner : MonoBehaviour
         // Générer une position aléatoire dans la plage horizontale
         float posX = Random.Range(-largeurTotale, largeurTotale);
 
-        // Générer une position Y dans les limites du sol définies
-        float posY = Random.Range(minY, maxY);
+        // Effectuer un raycast pour détecter le sol
+        Vector2 origineRaycast = new Vector2(posX, mainCamera.transform.position.y + hauteurMaxRechercheSol);
+        RaycastHit2D hit = Physics2D.Raycast(origineRaycast, Vector2.down, hauteurMaxRechercheSol, layerSol);
 
-        // Retourner la position en coordonnées monde
-        return (Vector2)mainCamera.transform.position + new Vector2(posX, posY);
+        if (hit.collider != null)
+        {
+            // Retourner la position exacte sur le sol
+            return new Vector2(posX, hit.point.y);
+        }
+        else
+        {
+            // Si aucun sol n'est détecté, on retourne une position par défaut (évite les erreurs)
+            Debug.LogWarning("Aucune surface détectée pour spawn un zombie !");
+            return new Vector2(posX, mainCamera.transform.position.y);
+        }
     }
 
     void SpawnZombie()
@@ -78,5 +88,19 @@ public class ZombieSpawner : MonoBehaviour
     {
         yield return new WaitUntil(() => zombie == null);
         zombiesActuels--;
+    }
+
+    void OnDrawGizmosSelected()
+    {
+        // Dessiner une ligne pour visualiser la portée du raycast de recherche de sol
+        Gizmos.color = Color.green;
+        float largeurCamera = 2f * Camera.main.orthographicSize * Camera.main.aspect;
+        float largeurTotale = largeurCamera / 2 + margeHorsEcran;
+
+        Vector2 origineRaycast = new Vector2(-largeurTotale, Camera.main.transform.position.y + hauteurMaxRechercheSol);
+        Gizmos.DrawLine(origineRaycast, origineRaycast + Vector2.down * hauteurMaxRechercheSol);
+
+        origineRaycast.x = largeurTotale;
+        Gizmos.DrawLine(origineRaycast, origineRaycast + Vector2.down * hauteurMaxRechercheSol);
     }
 }
