@@ -2,22 +2,25 @@ using UnityEngine;
 
 public class Zombie : MonoBehaviour
 {
-    [Header("Param�tres du Zombie")]
-    [SerializeField] private float vitesse = 3f;
+    [Header("Paramètres du Zombie")]
+    [SerializeField] private float vitesse = 5f;
     [SerializeField] private float pointsDeVie = 100f;
     [SerializeField] private float degats = 20f;
+    [SerializeField] private Vector2 zoneAttaqueDimensions = new Vector2(1f, 1f); // Taille de la zone d'attaque
+    [SerializeField] private float tempsEntreAttaques = 1f; // Temps entre chaque attaque
 
     private Transform joueur;
     private Rigidbody2D rb;
     private SpriteRenderer spriteRenderer;
     private bool estVivant = true;
+    private bool enTrainDattaquer = false;
 
     void Start()
     {
-        // Obtient les composants n�cessaires
+        // Obtient les composants nécessaires
         rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
-        // Trouve le joueur au d�marrage
+        // Trouve le joueur au démarrage
         joueur = GameObject.FindGameObjectWithTag("Player")?.transform;
     }
 
@@ -25,17 +28,54 @@ public class Zombie : MonoBehaviour
     {
         if (!estVivant || joueur == null) return;
 
-        // Calcule la direction vers le joueur
-        Vector2 direction = ((Vector2)joueur.position - rb.position).normalized;
+        // Vérifie si le joueur est dans la zone d'attaque
+        if (EstDansZoneAttaque())
+        {
+            if (!enTrainDattaquer)
+            {
+                // Lance une attaque
+                StartCoroutine(Attaquer());
+            }
+            // Arrête le mouvement
+            rb.linearVelocity = Vector2.zero;
+        }
+        else
+        {
+            // Calcule la direction vers le joueur
+            Vector2 direction = ((Vector2)joueur.position - rb.position).normalized;
 
-        // D�place le zombie
-        rb.linearVelocity = direction * vitesse;
+            // Déplace le zombie
+            rb.linearVelocity = direction * vitesse;
 
-        // Retourne le sprite selon la direction
-        if (direction.x < 0)
-            spriteRenderer.flipX = true;
-        else if (direction.x > 0)
-            spriteRenderer.flipX = false;
+            // Retourne le sprite selon la direction
+            if (direction.x < 0)
+                spriteRenderer.flipX = true;
+            else if (direction.x > 0)
+                spriteRenderer.flipX = false;
+        }
+    }
+
+    private bool EstDansZoneAttaque()
+    {
+        // Position de la zone d'attaque
+        Vector2 centre = (Vector2)transform.position;
+        // Vérifie si le joueur est dans la zone définie
+        Collider2D joueurCollider = Physics2D.OverlapBox(centre, zoneAttaqueDimensions, 0f, LayerMask.GetMask("Player"));
+        return joueurCollider != null;
+    }
+
+    private System.Collections.IEnumerator Attaquer()
+    {
+        enTrainDattaquer = true;
+
+        // Inflict damage to the player (to be implemented in the player's script)
+        Debug.Log("Zombie attaque le joueur !");
+
+        // TODO: Ajouter le code pour infliger des dégâts au joueur
+
+        // Attendre avant de pouvoir attaquer à nouveau
+        yield return new WaitForSeconds(tempsEntreAttaques);
+        enTrainDattaquer = false;
     }
 
     public void PrendreDegats(float degats)
@@ -50,18 +90,23 @@ public class Zombie : MonoBehaviour
 
     private void Mourir()
     {
-        estVivant = true;
-        // D�sactive les composants
-        rb.linearVelocity = Vector2.zero;
-        Destroy(gameObject, 1f);
+        estVivant = false;
+        rb.linearVelocity = Vector2.zero; // Arrête le zombie
+        Destroy(gameObject, 1f); // Détruit le zombie après 1 seconde
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Player"))
         {
-            // Vous pouvez ajouter ici le code pour infliger des d�g�ts au joueur
-            Debug.Log("Le zombie a touch� le joueur !");
+            Debug.Log("Le zombie a touché le joueur !");
         }
+    }
+
+    void OnDrawGizmosSelected()
+    {
+        // Dessine la zone d'attaque pour la visualiser dans l'éditeur
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireCube(transform.position, zoneAttaqueDimensions);
     }
 }

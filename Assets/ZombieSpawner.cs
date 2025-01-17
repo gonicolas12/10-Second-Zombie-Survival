@@ -7,9 +7,13 @@ public class ZombieSpawner : MonoBehaviour
     [SerializeField] private GameObject zombiePrefab;
 
     [Header("Paramètres de Spawn")]
-    [SerializeField] private float tempsEntreSpawns = 10f;
-    [SerializeField] private int nombreMaxZombies = 10;
+    [SerializeField] private float tempsEntreSpawns = 1f;
+    [SerializeField] private int nombreMaxZombies = 100;
     [SerializeField] private float margeHorsEcran = 2f; // Distance supplémentaire hors de l'écran
+
+    [Header("Limites de Spawn au sol")]
+    [SerializeField] private float minY = -4f; // Hauteur minimale pour spawn
+    [SerializeField] private float maxY = -3f; // Hauteur maximale pour spawn
 
     private Camera mainCamera;
     private int zombiesActuels = 0;
@@ -34,55 +38,27 @@ public class ZombieSpawner : MonoBehaviour
         }
     }
 
-    Vector2 ObtenirPositionSpawnHorsEcran()
+    Vector2 ObtenirPositionSpawnSol()
     {
-        // Calculer les limites de l'écran en unités monde
-        float hauteurCamera = 2f * mainCamera.orthographicSize;
-        float largeurCamera = hauteurCamera * mainCamera.aspect;
+        // Calculer les limites horizontales de l'écran en unités monde
+        float largeurCamera = 2f * mainCamera.orthographicSize * mainCamera.aspect;
 
         // Ajouter une marge pour spawn hors écran
-        float hauteurTotale = hauteurCamera / 2 + margeHorsEcran;
         float largeurTotale = largeurCamera / 2 + margeHorsEcran;
 
-        // Choisir un côté aléatoirement
-        int cote = Random.Range(0, 4);
-        Vector2 position = Vector2.zero;
+        // Générer une position aléatoire dans la plage horizontale
+        float posX = Random.Range(-largeurTotale, largeurTotale);
 
-        switch (cote)
-        {
-            case 0: // Haut
-                position = new Vector2(
-                    Random.Range(-largeurCamera, largeurCamera),
-                    hauteurTotale
-                );
-                break;
-            case 1: // Droite
-                position = new Vector2(
-                    largeurTotale,
-                    Random.Range(-hauteurCamera, hauteurCamera)
-                );
-                break;
-            case 2: // Bas
-                position = new Vector2(
-                    Random.Range(-largeurCamera, largeurCamera),
-                    -hauteurTotale
-                );
-                break;
-            case 3: // Gauche
-                position = new Vector2(
-                    -largeurTotale,
-                    Random.Range(-hauteurCamera, hauteurCamera)
-                );
-                break;
-        }
+        // Générer une position Y dans les limites du sol définies
+        float posY = Random.Range(minY, maxY);
 
         // Retourner la position en coordonnées monde
-        return (Vector2)mainCamera.transform.position + position;
+        return (Vector2)mainCamera.transform.position + new Vector2(posX, posY);
     }
 
     void SpawnZombie()
     {
-        Vector2 positionSpawn = ObtenirPositionSpawnHorsEcran();
+        Vector2 positionSpawn = ObtenirPositionSpawnSol();
 
         // Créer le zombie
         GameObject zombie = Instantiate(zombiePrefab, positionSpawn, Quaternion.identity);
