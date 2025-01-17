@@ -10,7 +10,7 @@ public class PlayerController : MonoBehaviour
     [Header("Shooting Parameters")]
     [SerializeField] private GameObject bulletPrefab;
     [SerializeField] private Transform firePoint;
-    [SerializeField] private float bulletSpeed = 20f;
+    [SerializeField] private float bulletSpeed = 30f;
 
     [Header("Ground Check")]
     [SerializeField] private Transform groundCheck;

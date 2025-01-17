@@ -437,8 +437,8 @@ Transform:
   m_GameObject: {fileID: 732442468}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.0061, y: -4.94, z: 1.7580105}
-  m_LocalScale: {x: 58.22551, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: -7, z: 1.7580105}
+  m_LocalScale: {x: 58.22551, y: 4, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -693,7 +693,7 @@ MonoBehaviour:
   fallMultiplier: 2.5
   bulletPrefab: {fileID: 6737276901330319102, guid: 6d72d7a971781294eb2fdee7f8e62291, type: 3}
   firePoint: {fileID: 1870844253}
-  bulletSpeed: 20
+  bulletSpeed: 30
   groundCheck: {fileID: 1086475524}
   groundCheckRadius: 0.2
   groundLayer:
