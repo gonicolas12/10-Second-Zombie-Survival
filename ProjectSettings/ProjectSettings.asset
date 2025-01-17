@@ -687,11 +687,11 @@ PlayerSettings:
   captureStartupLogs: {}
   activeInputHandler: 2
   windowsGamepadBackendHint: 0
-  cloudProjectId: 2bcbe8fb-61a0-499e-a6a8-1e648a53a070
+  cloudProjectId: bfa144eb-eac2-49bc-8b3f-f6d027ae1f91
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
   projectName: 10-Second-Zombie-Survival
-  organizationId: gonicolas12
+  organizationId: shems31
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   hmiLoadingImage: {fileID: 0}
