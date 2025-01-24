@@ -2,18 +2,25 @@ using UnityEngine;
 
 public class ZombieController : MonoBehaviour
 {
+    [Header("Zombie Parameters")]
     public float moveSpeed = 2f;
     public int maxHealth = 3;
     public float avoidanceForce = 5f;
 
+    [Header("Damage Parameters")]
+    public float damagePerSecond = 20f;
+    public float damageTickRate = 1f;
+
     private int currentHealth;
     private Transform playerTransform;
+    private PlayerHealth playerHealth;
     private Rigidbody2D rb;
     private CapsuleCollider2D col;
     private SpriteRenderer spriteRenderer;
     private LayerMask groundLayer;
     private bool isDead = false;
     private bool isFlashing = false;
+    private float nextDamageTime;
 
     private void Awake()
     {
@@ -28,11 +35,25 @@ public class ZombieController : MonoBehaviour
     {
         currentHealth = maxHealth;
         playerTransform = GameObject.FindGameObjectWithTag("Player")?.transform;
-
+        if (playerTransform != null)
+        {
+            playerHealth = playerTransform.GetComponent<PlayerHealth>();
+        }
         if (rb != null)
         {
             rb.gravityScale = 1f;
             rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+        }
+    }
+
+    private void OnCollisionStay2D(Collision2D collision)
+    {
+        if (isDead || playerHealth == null) return;
+
+        if (collision.gameObject.CompareTag("Player") && Time.time >= nextDamageTime)
+        {
+            playerHealth.TakeDamage(damagePerSecond * Time.fixedDeltaTime);
+            nextDamageTime = Time.time + Time.fixedDeltaTime;
         }
     }
 

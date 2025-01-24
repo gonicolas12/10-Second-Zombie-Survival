@@ -142,6 +142,8 @@ MonoBehaviour:
   moveSpeed: 2
   maxHealth: 3
   avoidanceForce: 5
+  damagePerSecond: 20
+  damageTickRate: 1
 --- !u!50 &3725388177704041250
 Rigidbody2D:
   serializedVersion: 5
