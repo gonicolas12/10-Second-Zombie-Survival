@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using TMPro;
+using UnityEngine.UI;
 
 public class ZombieSpawnManager : MonoBehaviour
 {
@@ -16,6 +17,9 @@ public class ZombieSpawnManager : MonoBehaviour
     public float zombiesIncreasePerRound = 1.5f;
     public TextMeshProUGUI roundText;
     public TextMeshProUGUI timerText;
+    public TextMeshProUGUI roundTransitionText;
+    public float transitionDuration = 2f; // Durée d'affichage au centre
+    public float fadeSpeed = 2f;
 
     private Camera mainCamera;
     private LayerMask groundLayer;
@@ -34,17 +38,47 @@ public class ZombieSpawnManager : MonoBehaviour
         StartNextRound();
     }
 
+    private IEnumerator RoundTransitionEffect()
+    {
+        // Configurer le texte de transition
+        roundTransitionText.text = $"Round {currentRound + 1}";
+
+        // Fade in
+        float alpha = 0f;
+        Color textColor = roundTransitionText.color;
+        while (alpha < 1f)
+        {
+            alpha += Time.deltaTime * fadeSpeed;
+            roundTransitionText.color = new Color(textColor.r, textColor.g, textColor.b, alpha);
+            yield return null;
+        }
+
+        yield return new WaitForSeconds(transitionDuration);
+
+        // Fade out
+        while (alpha > 0f)
+        {
+            alpha -= Time.deltaTime * fadeSpeed;
+            roundTransitionText.color = new Color(textColor.r, textColor.g, textColor.b, alpha);
+            yield return null;
+        }
+
+        roundTransitionText.color = new Color(textColor.r, textColor.g, textColor.b, 0f);
+    }
+
     private void StartNextRound()
     {
-        if (timerText != null)
-        {
-            timerText.text = "";
-        }
+        StartCoroutine(RoundTransitionEffect());
 
         currentRound++;
         UpdateRoundText();
         zombiesToSpawn = Mathf.RoundToInt(baseZombiesPerRound * Mathf.Pow(zombiesIncreasePerRound, currentRound - 1));
         isSpawning = true;
+
+        if (timerText != null)
+        {
+            timerText.text = "";
+        }
 
         if (spawnCoroutine != null)
             StopCoroutine(spawnCoroutine);
