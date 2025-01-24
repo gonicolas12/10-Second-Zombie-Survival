@@ -3,7 +3,7 @@ using UnityEngine;
 public class ZombieController : MonoBehaviour
 {
     [Header("Zombie Parameters")]
-    public float moveSpeed = 2f;
+    public float moveSpeed = 3f;
     public int maxHealth = 3;
     public float avoidanceForce = 5f;
 
@@ -21,6 +21,7 @@ public class ZombieController : MonoBehaviour
     private bool isDead = false;
     private bool isFlashing = false;
     private float nextDamageTime;
+    private ZombieSpawnManager spawnManager;
 
     private void Awake()
     {
@@ -149,14 +150,16 @@ public class ZombieController : MonoBehaviour
         if (isDead) return;
         isDead = true;
 
-        // Désactiver les composants immédiatement
+        // Notifier le SpawnManager
+        if (spawnManager != null)
+        {
+            spawnManager.OnZombieKilled();
+        }
+
+        // Le reste du code Die() reste identique
         if (rb != null) rb.simulated = false;
         if (col != null) col.enabled = false;
-
-        // Désactiver tous les scripts
         enabled = false;
-
-        // Détruire l'objet immédiatement
         Destroy(gameObject);
     }
 
@@ -168,5 +171,9 @@ public class ZombieController : MonoBehaviour
     private void OnDestroy()
     {
         CancelInvoke();
+    }
+    public void SetSpawnManager(ZombieSpawnManager manager)
+    {
+        spawnManager = manager;
     }
 }
