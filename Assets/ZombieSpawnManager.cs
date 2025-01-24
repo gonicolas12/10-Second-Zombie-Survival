@@ -12,7 +12,7 @@ public class ZombieSpawnManager : MonoBehaviour
 
     [Header("Round Settings")]
     public float roundDuration = 10f;
-    public int baseZombiesPerRound = 5;
+    public int baseZombiesPerRound = 10;
     public float zombiesIncreasePerRound = 1.5f;
     public TextMeshProUGUI roundText;
     public TextMeshProUGUI timerText;
