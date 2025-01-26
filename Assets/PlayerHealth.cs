@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class PlayerHealth : MonoBehaviour
 {
@@ -12,8 +13,25 @@ public class PlayerHealth : MonoBehaviour
     [SerializeField] private Slider healthBar;
     [SerializeField] private Image fillImage;
     [SerializeField] private TextMeshProUGUI gameOverText;
+    [SerializeField] private Button replayButton;
+    [SerializeField] private Button quitButton;
 
     private bool isDead = false;
+
+    private void RestartGame()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    private void QuitGame()
+    {
+        #if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+        #else
+        Application.Quit();
+        #endif
+    }
 
     private void Start()
     {
@@ -24,16 +42,25 @@ public class PlayerHealth : MonoBehaviour
         {
             Debug.LogError("Health Bar n'est pas assignée au PlayerHealth!");
         }
-
         if (fillImage == null)
         {
             Debug.LogError("Fill Image n'est pas assignée au PlayerHealth!");
         }
 
-        // Cache le texte Game Over au démarrage
+        // Cache le texte Game Over et les boutons au démarrage
         if (gameOverText != null)
         {
             gameOverText.gameObject.SetActive(false);
+        }
+        if (replayButton != null)
+        {
+            replayButton.gameObject.SetActive(false);
+            replayButton.onClick.AddListener(RestartGame);
+        }
+        if (quitButton != null)
+        {
+            quitButton.gameObject.SetActive(false);
+            quitButton.onClick.AddListener(QuitGame);
         }
 
         UpdateHealthBar();
@@ -70,13 +97,20 @@ public class PlayerHealth : MonoBehaviour
     private void Die()
     {
         isDead = true;
-        // Arrête le jeu
         Time.timeScale = 0f;
 
-        // Affiche le texte Game Over
+        // Affiche le texte Game Over et les boutons
         if (gameOverText != null)
         {
             gameOverText.gameObject.SetActive(true);
+        }
+        if (replayButton != null)
+        {
+            replayButton.gameObject.SetActive(true);
+        }
+        if (quitButton != null)
+        {
+            quitButton.gameObject.SetActive(true);
         }
 
         // Désactive le PlayerController

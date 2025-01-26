@@ -98,13 +98,4 @@ public class PlayerController : MonoBehaviour
         scale.x *= -1;
         transform.localScale = scale;
     }
-
-    private void OnDrawGizmos()
-    {
-        if (groundCheck != null)
-        {
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
-        }
-    }
 }
