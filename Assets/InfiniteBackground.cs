@@ -3,8 +3,8 @@ using UnityEngine;
 public class InfiniteBackground : MonoBehaviour
 {
     public float parallaxEffect = 0.3f;
-    public GameObject imagePrefab; // Le prefab de votre image de fond
-    public int numberOfCopies = 3; // Nombre de copies de chaque côté
+    public GameObject imagePrefab; // L'image à répéter
+    public int numberOfCopies = 3;
     private float imageWidth;
     private Transform playerTransform;
     private GameObject[] backgrounds;

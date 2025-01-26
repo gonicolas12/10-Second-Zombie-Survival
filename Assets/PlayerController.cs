@@ -93,8 +93,8 @@ public class PlayerController : MonoBehaviour
 
     private void Flip()
     {
-        facingRight = !facingRight;
-        Vector3 scale = transform.localScale;
+        facingRight = !facingRight; // Inverse la direction du personnage
+        Vector3 scale = transform.localScale; // Récupère l'échelle actuelle
         scale.x *= -1;
         transform.localScale = scale;
     }

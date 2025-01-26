@@ -68,18 +68,22 @@ public class ZombieSpawnManager : MonoBehaviour
 
     private void StartNextRound()
     {
+        // Effet de transition
         StartCoroutine(RoundTransitionEffect());
 
+        // Mise à jour du round
         currentRound++;
         UpdateRoundText();
         zombiesToSpawn = Mathf.RoundToInt(baseZombiesPerRound * Mathf.Pow(zombiesIncreasePerRound, currentRound - 1));
         isSpawning = true;
 
+        // Réinitialiser le timer
         if (timerText != null)
         {
             timerText.text = "";
         }
 
+        // Arrêter les coroutines en cours
         if (spawnCoroutine != null)
             StopCoroutine(spawnCoroutine);
 
@@ -131,8 +135,10 @@ public class ZombieSpawnManager : MonoBehaviour
 
     private IEnumerator SpawnRoutine()
     {
+        // Attendre 1 seconde avant de commencer
         float endTime = Time.time + roundDuration;
 
+        // Faire spawn les zombies
         while (Time.time < endTime && zombiesToSpawn > 0)
         {
             SpawnZombie();
@@ -141,6 +147,7 @@ public class ZombieSpawnManager : MonoBehaviour
             yield return new WaitForSeconds(spawnInterval);
         }
 
+        // Fin du round
         isSpawning = false;
         StartCoroutine(CheckForRoundEnd());
     }
@@ -168,11 +175,14 @@ public class ZombieSpawnManager : MonoBehaviour
         float cameraWidth = cameraHeight * mainCamera.aspect;
         Vector3 cameraPosition = mainCamera.transform.position;
 
+        // Position de spawn aléatoire
         float spawnPosX = cameraPosition.x + (Random.value < 0.5f ? -cameraWidth / 2 - spawnOffsetX : cameraWidth / 2 + spawnOffsetX);
 
+        // Raycast pour trouver la position de spawn
         Vector2 rayStart = new Vector2(spawnPosX, cameraPosition.y + cameraHeight / 2);
         RaycastHit2D hit = Physics2D.Raycast(rayStart, Vector2.down, cameraHeight * 2, groundLayer);
 
+        // Position de spawn
         Vector3 spawnPosition;
         if (hit.collider != null)
         {
@@ -183,8 +193,10 @@ public class ZombieSpawnManager : MonoBehaviour
             spawnPosition = new Vector3(spawnPosX, cameraPosition.y, 0);
         }
 
+        // Créer le zombie
         GameObject zombie = Instantiate(zombiePrefab, spawnPosition, Quaternion.identity);
         ZombieController zombieController = zombie.GetComponent<ZombieController>();
+
         if (zombieController != null)
         {
             zombieController.SetSpawnManager(this);

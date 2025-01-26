@@ -10,9 +10,9 @@ public class MenuManager : MonoBehaviour
 
     public void QuitGame()
     {
-        #if UNITY_EDITOR
+        #if UNITY_EDITOR // Si l'application est en mode édition
         UnityEditor.EditorApplication.isPlaying = false;
-        #else
+        #else // Si l'application est en mode build
             Application.Quit();
         #endif
     }

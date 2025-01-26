@@ -36,10 +36,13 @@ public class ZombieController : MonoBehaviour
     {
         currentHealth = maxHealth;
         playerTransform = GameObject.FindGameObjectWithTag("Player")?.transform;
+
+        // Récupérer le PlayerHealth du joueur
         if (playerTransform != null)
         {
             playerHealth = playerTransform.GetComponent<PlayerHealth>();
         }
+        // Démarrer la coroutine de dégâts
         if (rb != null)
         {
             rb.gravityScale = 1f;
@@ -51,6 +54,7 @@ public class ZombieController : MonoBehaviour
     {
         if (isDead || playerHealth == null) return;
 
+        // Appliquer des dégâts au joueur
         if (collision.gameObject.CompareTag("Player") && Time.time >= nextDamageTime)
         {
             playerHealth.TakeDamage(damagePerSecond * Time.fixedDeltaTime);
@@ -60,7 +64,7 @@ public class ZombieController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (isDead || rb == null || playerTransform == null) return;
+        if (isDead || rb == null || playerTransform == null) return; // Vérifie si le joueur est mort
 
         if (IsOnGround())
         {
@@ -68,6 +72,7 @@ public class ZombieController : MonoBehaviour
         }
     }
 
+    // Déplacement du Zombie vers le joueur
     private void MoveTowardsPlayer()
     {
         if (isDead) return;
@@ -80,6 +85,7 @@ public class ZombieController : MonoBehaviour
         }
     }
 
+    // Vérifie si le Zombie est au sol
     private bool IsOnGround()
     {
         if (col == null) return false;
@@ -126,6 +132,7 @@ public class ZombieController : MonoBehaviour
         }
     }
 
+    // Flasher le Zombie en rouge
     private void Flash()
     {
         if (isDead || spriteRenderer == null || !gameObject.activeInHierarchy) return;
@@ -150,13 +157,13 @@ public class ZombieController : MonoBehaviour
         if (isDead) return;
         isDead = true;
 
-        // Notifier le SpawnManager
+        // Notifie le SpawnManager
         if (spawnManager != null)
         {
             spawnManager.OnZombieKilled();
         }
 
-        // Le reste du code Die() reste identique
+        // Désactive les composants
         if (rb != null) rb.simulated = false;
         if (col != null) col.enabled = false;
         enabled = false;
@@ -172,6 +179,7 @@ public class ZombieController : MonoBehaviour
     {
         CancelInvoke();
     }
+
     public void SetSpawnManager(ZombieSpawnManager manager)
     {
         spawnManager = manager;
