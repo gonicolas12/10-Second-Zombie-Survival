@@ -7,18 +7,17 @@ public class ZombieSpawnManager : MonoBehaviour
 {
     [Header("Spawn Settings")]
     public GameObject zombiePrefab;
-    public float spawnInterval = 1f;
-    public float spawnOffsetX = 5f;
-    public float spawnHeightOffset = 2f;
+    [SerializeField] private float spawnOffsetX = 5f;
+    [SerializeField] private float spawnHeightOffset = 2f;
 
     [Header("Round Settings")]
     public float roundDuration = 10f;
     public int baseZombiesPerRound = 10;
-    public float zombiesIncreasePerRound = 1.5f;
+    public float zombiesIncreasePerRound = 1.2f;
     public TextMeshProUGUI roundText;
     public TextMeshProUGUI timerText;
     public TextMeshProUGUI roundTransitionText;
-    public float transitionDuration = 2f; // Durée d'affichage au centre
+    public float transitionDuration = 2f;
     public float fadeSpeed = 2f;
 
     private Camera mainCamera;
@@ -27,6 +26,7 @@ public class ZombieSpawnManager : MonoBehaviour
     private bool isSpawning = false;
     private int zombiesAlive = 0;
     private int zombiesToSpawn = 0;
+    private float spawnInterval;
     private Coroutine spawnCoroutine;
     private Coroutine timerCoroutine;
     public string killZombiesMessage = "Tuez les zombies restants !";
@@ -40,8 +40,7 @@ public class ZombieSpawnManager : MonoBehaviour
 
     private IEnumerator RoundTransitionEffect()
     {
-        // Configurer le texte de transition
-        roundTransitionText.text = $"Round {currentRound + 1}";
+        roundTransitionText.text = $"Round {currentRound}";
 
         // Fade in
         float alpha = 0f;
@@ -68,13 +67,17 @@ public class ZombieSpawnManager : MonoBehaviour
 
     private void StartNextRound()
     {
-        // Effet de transition
-        StartCoroutine(RoundTransitionEffect());
-
-        // Mise à jour du round
         currentRound++;
         UpdateRoundText();
+
+        StartCoroutine(RoundTransitionEffect());
+
+        // Calcul du nombre de zombies pour ce round
         zombiesToSpawn = Mathf.RoundToInt(baseZombiesPerRound * Mathf.Pow(zombiesIncreasePerRound, currentRound - 1));
+
+        // Calcul dynamique de l'intervalle de spawn avec un minimum de 0.1 seconde
+        spawnInterval = Mathf.Max(roundDuration / zombiesToSpawn, 0.1f);
+
         isSpawning = true;
 
         // Réinitialiser le timer
