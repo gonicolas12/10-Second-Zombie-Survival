@@ -17,16 +17,25 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float groundCheckRadius = 0.2f;
     [SerializeField] private LayerMask groundLayer;
 
+    [Header("Animation Parameters")]
+    [SerializeField] private float runAnimationSpeed = 1f;
+
+    // Constantes pour les paramètres d'animation
+    private static readonly string IS_RUNNING = "IsRunning";
+    private static readonly string IS_SHOOTING = "IsShooting";
+
     private Rigidbody2D rb;
     private bool isGrounded;
     private float horizontalInput;
     private bool facingRight = true;
     private Camera mainCamera;
+    private Animator animator;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         mainCamera = Camera.main;
+        animator = GetComponent<Animator>();
     }
 
     private void Update()
@@ -36,6 +45,10 @@ public class PlayerController : MonoBehaviour
 
         // Déplacements
         horizontalInput = Input.GetAxisRaw("Horizontal");
+
+        // Animation de course/idle
+        animator.SetBool(IS_RUNNING, Mathf.Abs(horizontalInput) > 0.1f);
+        animator.SetFloat("AnimationSpeed", runAnimationSpeed);
 
         // Saut
         if (Input.GetButtonDown("Jump") && isGrounded)
@@ -75,12 +88,14 @@ public class PlayerController : MonoBehaviour
 
     private void Shoot(Vector2 targetPosition)
     {
+        // Déclenche l'animation de tir
+        animator.SetTrigger(IS_SHOOTING);
+
         // Crée la balle au point de tir
         GameObject bullet = Instantiate(bulletPrefab, firePoint.position, Quaternion.identity);
 
         // Calcule la direction vers la position de la souris
         Vector2 direction = (targetPosition - (Vector2)firePoint.position).normalized;
-
         Rigidbody2D bulletRb = bullet.GetComponent<Rigidbody2D>();
 
         // Applique la vélocité à la balle
