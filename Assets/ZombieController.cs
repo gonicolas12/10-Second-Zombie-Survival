@@ -132,7 +132,7 @@ public class ZombieController : MonoBehaviour
         }
     }
 
-    // Flasher le Zombie en rouge
+    // Flashe le Zombie en rouge
     private void Flash()
     {
         if (isDead || spriteRenderer == null || !gameObject.activeInHierarchy) return;

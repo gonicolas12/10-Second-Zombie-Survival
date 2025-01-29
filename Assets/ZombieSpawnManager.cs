@@ -62,6 +62,7 @@ public class ZombieSpawnManager : MonoBehaviour
             yield return null;
         }
 
+        // Cacher le texte
         roundTransitionText.color = new Color(textColor.r, textColor.g, textColor.b, 0f);
     }
 
@@ -123,7 +124,7 @@ public class ZombieSpawnManager : MonoBehaviour
     {
         if (timerText != null)
         {
-            int seconds = Mathf.CeilToInt(timeRemaining);
+            int seconds = Mathf.CeilToInt(timeRemaining); // Arrondi à l'entier supérieur
             timerText.text = $"{seconds}";
         }
     }
@@ -202,7 +203,7 @@ public class ZombieSpawnManager : MonoBehaviour
 
         if (zombieController != null)
         {
-            zombieController.SetSpawnManager(this);
+            zombieController.SetSpawnManager(this); // Passe la référence du ZombieSpawnManager
         }
     }
 }

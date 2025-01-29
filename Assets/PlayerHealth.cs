@@ -68,6 +68,7 @@ public class PlayerHealth : MonoBehaviour
 
     public void TakeDamage(float damage)
     {
+        // Vérifie si le joueur est mort
         if (isDead) return;
 
         currentHealth = Mathf.Max(0f, currentHealth - damage);

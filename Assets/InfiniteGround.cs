@@ -13,10 +13,11 @@ public class InfiniteGround : MonoBehaviour
 
     private void Update()
     {
+        // Vérifie si le sol est hors de l'écran
         float cameraLeftEdge = mainCamera.transform.position.x - mainCamera.orthographicSize * mainCamera.aspect;
         float cameraRightEdge = mainCamera.transform.position.x + mainCamera.orthographicSize * mainCamera.aspect;
 
-
+        // Repositionne le sol si nécessaire
         if (ground.position.x + groundWidth / 2 < cameraLeftEdge)
         {
             Debug.Log("Repositioning ground to the right");
