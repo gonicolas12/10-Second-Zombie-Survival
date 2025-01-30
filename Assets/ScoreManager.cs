@@ -24,14 +24,14 @@ public class ScoreManager : MonoBehaviour
         {
             instance = this;
         }
-        // Charger le meilleur score au démarrage
+        // Charge le meilleur score au démarrage
         highScore = PlayerPrefs.GetInt(HIGH_SCORE_KEY, 0);
     }
 
     private void Start()
     {
         UpdateScoreUI();
-        // Cacher les textes de fin de partie au démarrage
+        // Cache les textes de fin de partie au démarrage
         if (finalScoreText != null)
         {
             finalScoreText.gameObject.SetActive(false);
@@ -50,6 +50,7 @@ public class ScoreManager : MonoBehaviour
 
     private void UpdateScoreUI()
     {
+        // Met à jour le score affiché
         if (scoreText != null)
         {
             scoreText.text = currentScore.ToString();
@@ -59,6 +60,7 @@ public class ScoreManager : MonoBehaviour
 
     public void ShowFinalScore()
     {
+        // Affiche le score final
         if (finalScoreText != null)
         {
             finalScoreText.gameObject.SetActive(true);
@@ -66,7 +68,7 @@ public class ScoreManager : MonoBehaviour
             finalScoreText.color = Color.red;
         }
 
-        // Vérifier si c'est un nouveau meilleur score
+        // Vérifie si c'est un nouveau meilleur score
         if (currentScore > highScore)
         {
             highScore = currentScore;
@@ -74,7 +76,7 @@ public class ScoreManager : MonoBehaviour
             PlayerPrefs.Save();
         }
 
-        // Afficher le meilleur score
+        // Affiche le meilleur score
         if (highScoreText != null)
         {
             highScoreText.gameObject.SetActive(true);
