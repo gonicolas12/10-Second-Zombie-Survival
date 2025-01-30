@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class ZombieController : MonoBehaviour
 {
@@ -161,6 +162,12 @@ public class ZombieController : MonoBehaviour
         if (spawnManager != null)
         {
             spawnManager.OnZombieKilled();
+        }
+
+        // Ajoute des points au ScoreManager
+        if (ScoreManager.Instance != null)
+        {
+            ScoreManager.Instance.AddScore(100);
         }
 
         // Désactive les composants

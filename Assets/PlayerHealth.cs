@@ -104,6 +104,7 @@ public class PlayerHealth : MonoBehaviour
         if (gameOverText != null)
         {
             gameOverText.gameObject.SetActive(true);
+            ScoreManager.Instance?.ShowFinalScore();
         }
         if (replayButton != null)
         {
